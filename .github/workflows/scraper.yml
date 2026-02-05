@@ -25,7 +25,7 @@ jobs:
 
       - name: Run scraper
         run: python scraper.py
-
+      
       - name: Deploy JSON to GitHub Pages
         run: |
           mkdir -p public
@@ -37,7 +37,8 @@ jobs:
           git checkout -b gh-pages
           git add partidos.json
           git commit -m "Actualizar partidos"
-          git remote add origin "https://github.com/${{ github.repository }}.git"
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git push --force origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
