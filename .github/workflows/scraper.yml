@@ -24,15 +24,21 @@ jobs:
       - name: Run scraper
         run: python scraper.py
       
-      - name: Commit JSON
+      - name: Subir JSON a GitHub Pages
         run: |
+          mkdir -p public
+          cp partidos.json public/
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
+          cd public
+          git init
+          git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git checkout -b gh-pages
           git add partidos.json
-          git diff --cached --quiet || git commit -m "Actualizar partidos"
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
-          git push origin HEAD:main
+          git commit -m "Actualizar partidos"
+          git push --force origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
 
