@@ -2,7 +2,7 @@ name: FCFA Scraper
 
 on:
   schedule:
-    - cron: '0 6 * * 1'   # lunes 06:00 UTC (1 vez por semana)
+    - cron: '0 6 * * 1'  # lunes 06:00 UTC (una vez por semana)
   workflow_dispatch:
 
 jobs:
@@ -23,22 +23,17 @@ jobs:
 
       - name: Run scraper
         run: python scraper.py
-      
-      - name: Subir JSON a GitHub Pages
+
+      - name: Deploy JSON to GitHub Pages
         run: |
           mkdir -p public
           cp partidos.json public/
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
           cd public
           git init
-          git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           git checkout -b gh-pages
           git add partidos.json
           git commit -m "Actualizar partidos"
+          git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           git push --force origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
