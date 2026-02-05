@@ -4,12 +4,13 @@ import json
 import re
 
 URLS = {
-    "Lliga Senior": "https://fcfa.cat/lliga-catalana-de-futbol-america-25-26/",
-    "Lliga Junior": "https://fcfa.cat/lliga-catalana-de-futbol-america-junior-25-26/",
-    "Lliga Cadet":  "https://fcfa.cat/lliga-catalana-de-futbol-america-cadet-25-26/",
-    "Copa Senior":  "https://fcfa.cat/copa-catalana-de-futbol-america-senior-25-26/",
-    "Copa Cadet":   "https://fcfa.cat/copa-catalana-de-futbol-america-cadet-25-26/",
+    "Lliga Senior": "https://www.fcfa.cat/lliga-catalana-de-futbol-america-25-26/",
+    "Lliga Junior": "https://www.fcfa.cat/lliga-catalana-de-futbol-america-junior-25-26/",
+    "Lliga Cadet":  "https://www.fcfa.cat/lliga-catalana-de-futbol-america-cadet-25-26/",
+    "Copa Senior":  "https://www.fcfa.cat/copa-catalana-de-futbol-america-senior-25-26/",
+    "Copa Cadet":   "https://www.fcfa.cat/copa-catalana-de-futbol-america-cadet-25-26/",
 }
+
 
 KEYWORDS = ["bocs", "argentona", "pagesos"]
 
