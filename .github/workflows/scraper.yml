@@ -8,6 +8,8 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Permiso explícito para escribir en el repositorio
 
     steps:
       - name: Checkout repo
@@ -30,10 +32,12 @@ jobs:
           cp partidos.json public/
           cd public
           git init
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
           git checkout -b gh-pages
           git add partidos.json
           git commit -m "Actualizar partidos"
-          git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git remote add origin "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git push --force origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
