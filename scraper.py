@@ -9,8 +9,8 @@ URLS = {
     "Lliga Cadet":  "https://www.fcfa.cat/lliga-catalana-de-futbol-america-cadet-25-26/",
 }
 
-RECORTE_IZQ = 80
-RECORTE_DER = 80
+RECORTE_IZQ = 30
+RECORTE_DER = 65
 
 def es_nuestro(texto, categoria):
     t = texto.lower()
