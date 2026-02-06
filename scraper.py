@@ -10,7 +10,7 @@ URLS = {
 }
 
 RECORTE_IZQ = 150
-RECORTE_DER = 30
+RECORTE_DER = 80
 
 def es_nuestro(texto, categoria):
     t = texto.lower()
@@ -18,7 +18,7 @@ def es_nuestro(texto, categoria):
         return "bocs" in t
     return "bocs" in t or "argentona" in t
 
-def extraer_segmentos(texto, palabra="bocs", izq=100, der=30):
+def extraer_segmentos(texto, palabra="bocs", izq=150, der=80):
     segmentos = []
     for m in re.finditer(palabra, texto, re.IGNORECASE):
         start = max(0, m.start() - izq)
