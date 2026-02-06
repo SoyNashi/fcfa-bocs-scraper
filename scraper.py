@@ -18,7 +18,7 @@ def es_nuestro(texto, categoria):
         return "bocs" in t
     return "bocs" in t or "argentona" in t
 
-def extraer_segmentos(texto, palabra="bocs", izq=80, der=80):
+def extraer_segmentos(texto, palabra="bocs", izq=100, der=30):
     segmentos = []
     for m in re.finditer(palabra, texto, re.IGNORECASE):
         start = max(0, m.start() - izq)
