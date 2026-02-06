@@ -9,8 +9,8 @@ URLS = {
     "Lliga Cadet":  "https://www.fcfa.cat/lliga-catalana-de-futbol-america-cadet-25-26/",
 }
 
-RECORTE_IZQ = 80   # caracteres a la izquierda de "bocs"
-RECORTE_DER = 80   # caracteres a la derecha de "bocs"
+RECORTE_IZQ = 80
+RECORTE_DER = 80
 
 def es_nuestro(texto, categoria):
     t = texto.lower()
@@ -28,6 +28,7 @@ def extraer_segmentos(texto, palabra="bocs", izq=80, der=80):
 
 def main():
     partidos = []
+    vistos = set()  # anti-duplicados
     headers = {"User-Agent": "Mozilla/5.0 (compatible; FCFA-Bocs/1.0)"}
 
     for categoria, url in URLS.items():
@@ -42,9 +43,12 @@ def main():
             if not es_nuestro(text, categoria):
                 continue
 
-            segmentos = extraer_segmentos(text)
+            for seg in extraer_segmentos(text):
+                clave = seg.lower()  # normalizamos para evitar duplicados por mayúsculas
+                if clave in vistos:
+                    continue
+                vistos.add(clave)
 
-            for seg in segmentos:
                 partidos.append({
                     "categoria": categoria,
                     "texto": seg
