@@ -1,13 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import re
 
 URLS = {
     "Lliga Senior": "https://www.fcfa.cat/lliga-catalana-de-futbol-america-25-26/",
     "Lliga Junior": "https://www.fcfa.cat/lliga-catalana-de-futbol-america-junior-25-26/",
     "Lliga Cadet":  "https://www.fcfa.cat/lliga-catalana-de-futbol-america-cadet-25-26/",
-
 }
+
+RECORTE_IZQ = 80   # caracteres a la izquierda de "bocs"
+RECORTE_DER = 80   # caracteres a la derecha de "bocs"
 
 def es_nuestro(texto, categoria):
     t = texto.lower()
@@ -15,12 +18,21 @@ def es_nuestro(texto, categoria):
         return "bocs" in t
     return "bocs" in t or "argentona" in t
 
+def extraer_segmentos(texto, palabra="bocs", izq=80, der=80):
+    segmentos = []
+    for m in re.finditer(palabra, texto, re.IGNORECASE):
+        start = max(0, m.start() - izq)
+        end = min(len(texto), m.end() + der)
+        segmentos.append(texto[start:end])
+    return segmentos
+
 def main():
     partidos = []
     headers = {"User-Agent": "Mozilla/5.0 (compatible; FCFA-Bocs/1.0)"}
 
     for categoria, url in URLS.items():
         r = requests.get(url, headers=headers, timeout=20)
+        r.raise_for_status()
         soup = BeautifulSoup(r.text, "html.parser")
 
         for block in soup.find_all(["div", "p", "li"]):
@@ -29,7 +41,14 @@ def main():
                 continue
             if not es_nuestro(text, categoria):
                 continue
-            partidos.append({"categoria": categoria, "texto": text})
+
+            segmentos = extraer_segmentos(text)
+
+            for seg in segmentos:
+                partidos.append({
+                    "categoria": categoria,
+                    "texto": seg
+                })
 
     with open("partidos.json", "w", encoding="utf-8") as f:
         json.dump(partidos, f, ensure_ascii=False, indent=2)
