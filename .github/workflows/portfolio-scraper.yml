@@ -1,9 +1,7 @@
 name: Portfolio Scraper (LinkedIn)
 
 on:
-  schedule:
-    - cron: '0 7 * * 1'  # lunes 07:00 UTC
-  workflow_dispatch:
+  workflow_dispatch:  # solo manual, tú lo lanzas cuando actualices el JSON
 
 jobs:
   portfolio:
@@ -12,37 +10,24 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout rama principal
+      - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4
-
-      - name: Run LinkedIn scraper
-        run: python linkedin_scraper.py
 
       - name: Deploy portfolio.json a gh-pages sin borrar nada
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
 
-          # Clonar SOLO la rama gh-pages en una carpeta separada
           git clone --branch gh-pages --single-branch \
             "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
             gh-pages-dir
 
-          # Copiar solo el archivo nuevo, sin tocar partidos.json ni nada más
           cp portfolio.json gh-pages-dir/portfolio.json
 
           cd gh-pages-dir
           git add portfolio.json
-          git diff --cached --quiet && echo "Sin cambios, nada que commitear" || \
-            git commit -m "Actualizar portfolio LinkedIn"
+          git diff --cached --quiet && echo "Sin cambios" || \
+            git commit -m "Actualizar portfolio"
           git push origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
