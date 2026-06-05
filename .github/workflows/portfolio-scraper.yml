@@ -41,8 +41,8 @@ jobs:
 
           # Intentar traer la rama gh-pages existente para no perder partidos.json
           git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git fetch origin gh-ppages 2>/dev/null || true
-          git checkout -b gh-ppages 2>/dev/null || git checkout gh-pages
+          git fetch origin gh-pages 2>/dev/null || true
+          git checkout -b gh-pages 2>/dev/null || git checkout gh-pages
 
           # Copiar portfolio.json actualizado (partidos.json ya estará si existe)
           cp ../portfolio.json .
