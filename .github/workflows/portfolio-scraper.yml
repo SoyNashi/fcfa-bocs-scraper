@@ -1,0 +1,54 @@
+name: Portfolio Scraper (LinkedIn)
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'  # lunes 07:00 UTC (después del scraper de partidos)
+  workflow_dispatch:       # ejecución manual desde GitHub Actions
+
+jobs:
+  portfolio:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run LinkedIn scraper
+        run: python linkedin_scraper.py
+
+      - name: Deploy portfolio.json to GitHub Pages
+        run: |
+          mkdir -p public
+          cp portfolio.json public/
+
+          # Si ya existe partidos.json en public (del otro workflow), lo conservamos
+          # Esto solo ocurre si ambos workflows comparten la misma rama gh-pages
+
+          cd public
+          git init
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+          # Intentar traer la rama gh-pages existente para no perder partidos.json
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch origin gh-pages 2>/dev/null || true
+          git checkout -b gh-pages 2>/dev/null || git checkout gh-pages
+
+          # Copiar portfolio.json actualizado (partidos.json ya estará si existe)
+          cp ../portfolio.json .
+
+          git add portfolio.json
+          git diff --cached --quiet && echo "Sin cambios" || git commit -m "Actualizar portfolio LinkedIn"
+          git push --force origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
