@@ -2,14 +2,14 @@ name: FCFA Scraper
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # lunes 06:00 UTC (una vez por semana)
+    - cron: '0 6 * * 1'  # lunes 06:00 UTC
   workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Permiso explícito para escribir en el repositorio
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -25,20 +25,24 @@ jobs:
 
       - name: Run scraper
         run: python scraper.py
-      
-      - name: Deploy JSON to GitHub Pages
+
+      - name: Deploy partidos.json a gh-pages sin borrar nada
         run: |
-          mkdir -p public
-          cp partidos.json public/
-          cd public
-          git init
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git checkout -b gh-pages
+
+          # Clonar SOLO la rama gh-pages en una carpeta separada
+          git clone --branch gh-pages --single-branch \
+            "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            gh-pages-dir
+
+          # Copiar solo partidos.json, sin tocar portfolio.json ni nada más
+          cp partidos.json gh-pages-dir/partidos.json
+
+          cd gh-pages-dir
           git add partidos.json
-          git commit -m "Actualizar partidos"
-          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git push --force origin gh-pages
+          git diff --cached --quiet && echo "Sin cambios, nada que commitear" || \
+            git commit -m "Actualizar partidos"
+          git push origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
